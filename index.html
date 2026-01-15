@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1750, initial-scale=1.0">
+<title>USA Quiz + Random Name Spinner 🇺🇸</title>
+<style>
+
+    
+/* --- BODY & CONTAINER --- */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #3c3b6e, #b22234);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    color: white;
+    min-height: 100vh;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1400px; /* max width for large screens */
+    gap: 20px;
+}
+
+/* --- QUIZ BOX (75%) --- */
+.quiz-box {
+    flex: 3; /* 75% of width */
+    background: #111;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+#question { font-size: 22px; margin-bottom: 15px; }
+img { max-width: 100%; height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
+.answers button {
+    width: 100%; padding: 14px; margin: 8px 0; font-size: 18px; border: none;
+    border-radius: 8px; cursor: pointer; background: #3c3b6e; color: white;
+}
+.answers button:hover { background: #5a59a6; }
+.correct { background: #2ecc71 !important; }
+.wrong { background: #e74c3c !important; }
+#feedback { font-size: 20px; margin-top: 15px; font-weight: bold; }
+#nextBtn { margin-top: 15px; padding: 10px 20px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #f1c40f; display: none; }
+#progress { margin-top: 10px; opacity: 0.8; }
+
+/* --- SPINNER BOX (25%) --- */
+.spinner-box {
+    flex: 1; /* 25% of width */
+    background: #111;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+/* Arrow at top */
+#arrow {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 25px solid #f1c40f;
+    position: absolute;
+    top: 420px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+#spinButton {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #3c3b6e;
+    color: white;
+    cursor: pointer;
+}
+#spinButton:hover { background: #5a59a6; }
+#selectedName { margin-top: 15px; font-size: 20px; font-weight: bold; color: white; }
+#wheel { width: 100%; height: auto; max-width: 400px; max-height: 400px; }
+</style>
+</head>
+<body>
+
+    
+
+<div class="container">
+    <!-- Quiz -->
+    <div class="quiz-box">
+        <h1>Dopravní Zeměpis - USA</h1>
+        <div id="question"></div>
+        <img id="image" src="" alt="">
+        <div class="answers" id="answers"></div>
+        <div id="feedback"></div>
+        <button id="nextBtn" onclick="nextQuestion()">Next ➡️</button>
+        <div id="progress"></div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner-box">
+        <div id="arrow"></div>
+        <h2>Kolo Štěstí</h2>
+        <svg id="wheel" viewBox="0 0 400 400"></svg>
+        <button id="spinButton">SPIN 🎯</button>
+        <div id="selectedName"></div>
+    </div>
+</div>
+
+<script>
+// ---------------- QUIZ LOGIC ----------------
+const quiz = [
+        {
+        question: "Které město je největším železničním uzlem v USA?",
+        image: "High_Speed_Railroad_Map_of_the_United_States_2013.svg.png",
+        answers: ["New York", "Chicago", "Los Angeles", "Dallas"],
+        correct: 1
+    },
+    {
+        question: "Velké planiny (Great Plains) jsou klíčové pro",
+        image: "great plains.jpg",
+        answers: ["Těžbu ropy a zemního plynu", "Turistiku a horské sporty", "Rybolov a námořní dopravu", "Intenzivní zemědělství a produkci obilí"],
+        correct: 3
+    },
+    {
+        question: "Kdy se slaví Den díkůvzdání (Thanksgiving)?",
+        image: "",
+        answers: ["Každý rok 1. listopadu", "Poslední čtvrtek v listopadu", "4. července", "31. října"],
+        correct: 1
+    },
+    {
+        question: "Která stavba je symbolem New Yorku a byla darována Francií?",
+        image: "",
+        answers: ["Empire State Building", "Brooklyn Bridge", "Chrysler Building", "Statue of Liberty"],
+        correct: 3
+    },
+    {
+        question: "Které město se přezdívá „Velké jablko“?",
+        image: "https://upload.wikimedia.org/wikipedia/commons/4/47/New_york_times_square-terabass.jpg",
+        answers: ["Chicago", "New York City", "Miami", "Atlanta"],
+        correct: 1
+    },
+        {
+        question: "Který průplav je klíčový pro námořní dopravu USA mezi Atlantikem a Pacifikem?",
+        image: "",
+        answers: ["Suezský průplav", "Panamský průplav", "Kielský průplav", "Korintský průplav" ],
+        correct: 1
+    },
+        {
+        question: "Jak se nazývá dálniční síť propojující jednotlivé státy USA?",
+        image: "",
+        answers: ["National Road System", "Federal Highway Network", "Interstate Highway System", "Continental Highway System" ],
+        correct: 2
+    },    
+        {
+        question: "Která řeka je nejdůležitější vnitrozemskou vodní cestou v USA?",
+        image: "",
+        answers: ["Colorado", "Ohio", "Mississippi", "Columbia" ],
+        correct: 2
+    },   
+        {
+        question: "Kolik národních parků má USA?",
+        image: "iStock-820821400.jpg",
+        answers: ["72", "51", "86", "63" ],
+        correct: 3
+    },   
+        {
+        question: "Který stát USA je známý jako „Land of 10,000 Lakes“?",
+        image: "",
+        answers: ["Wisconsin", "Michigan", "Minnesota", "Ohio" ],
+        correct: 2
+    },   
+        {
+        question: "Který americký stát je nejmenší rozlohou?",
+        image: "Rhode_Island_in_United_States_(zoom).svg.jpg",
+        answers: ["Delaware", "Rhode Island", "Connecticut", "New Jersey" ],
+        correct: 1
+    },   
+        {
+        question: "Který stát USA je největším producentem kukuřice?",
+        image: "Corn_harvested_acres_by_county.jpg",
+        answers: ["Illinois", "Nebraska", "Kansas", "Iowa" ],
+        correct: 3
+    },   
+        {
+        question: "Které letiště v USA má nejvyšší počet odbavených cestujících?",
+        image: "1280px-Atlanta_Airport_Aerial_Angle_(31435634003)_(2).jpg",
+        answers: ["Los Angeles International Airport (LAX)", "Chicago O’Hare International Airport (ORD)", "Hartsfield–Jackson Atlanta International Airport (ATL)", "John F. Kennedy International Airport (JFK)" ],
+        correct: 2
+    },   
+        {
+        question: "Který americký stát je domovem nejvyšší hory Severní Ameriky – Denali?",
+        image: "",
+        answers: ["Colorado", "Alaska", "Montana", "Washington" ],
+        correct: 1
+    },   
+        {
+        question: "Který národní park je známý svými gejzíry a horkými prameny?",
+        image: "",
+        answers: ["Yellowstone", "Grand Teton", "Glacier", "Zion" ],
+        correct: 0
+    },   
+        {
+        question: "Který z těchto leteckých dopravců není z USA?",
+        image: "",
+        answers: ["Delta Airlines", "American Airlines", "United Airlines", "Lufthansa" ],
+        correct: 3
+    },   
+        {
+        question: "Nejnižší bod USA:",
+        image: "",
+        answers: ["Death Valley (Údolí smrti)", "Pontchartrain", "Záliv v Louisianě", "Camargue" ],
+        correct: 0
+    },   
+        {
+        question: "Který přístav je nejrušnější v USA z hlediska kontejnerové dopravy?",
+        image: "Port_of_Long_Beach_by_Don_Ramey_Logan.jpg",
+        answers: ["Miami", "Seattle", "New York", "Los Angeles" ],
+        correct: 3
+    },   
+        {
+        question: "Který den se slaví Den nezávislosti USA?",
+        image: "",
+        answers: ["1. ledna", "4. července", "31. října", "25. prosince" ],
+        correct: 1
+    },   
+        {
+        question: "Která socha se nachází na hoře Rushmore?",
+        image: "Mount_Rushmore_detail_view_(100MP).jpg",
+        answers: ["Socha Svobody", "Socha prezidentů – George Washington, Thomas Jefferson, Theodore Roosevelt a Abraham Lincoln", "Socha prezidentů - George Washington, Grover Cleveland, Theodore Roosevelt a Abraham Lincoln", "Lincoln Memorial" ],
+        correct: 1
+    },          
+
+
+];
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+    answered = false;
+    const q = quiz[currentQuestion];
+
+    document.getElementById("question").innerText = q.question;
+    document.getElementById("image").src = q.image;
+    document.getElementById("feedback").innerText = "";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("progress").innerText =
+        `Question ${currentQuestion + 1} / ${quiz.length}`;
+
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+
+    q.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.innerText = answer;
+        btn.onclick = () => checkAnswer(btn, index);
+        answersDiv.appendChild(btn);
+    });
+}
+
+function checkAnswer(button, selected) {
+    if (answered) return;
+    answered = true;
+
+    const correctIndex = quiz[currentQuestion].correct;
+    const buttons = document.querySelectorAll(".answers button");
+
+    buttons.forEach((btn, index) => {
+        if (index === correctIndex) btn.classList.add("correct");
+        if (index === selected && index !== correctIndex) btn.classList.add("wrong");
+    });
+
+    if (selected === correctIndex) {
+        score++;
+        document.getElementById("feedback").innerText = "✅ Správně!";
+    } else {
+        document.getElementById("feedback").innerText = "❌ Nevadí, propadneš!";
+    }
+
+    document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quiz.length) {
+        loadQuestion();
+    } else {
+        document.querySelector(".quiz-box").innerHTML = `
+            <h1>🎉 Dokončil jsi kvíz :)!</h1>
+            <h2>Vaše skóre: ${score} / ${quiz.length}</h2>
+            <p>${score >= 15 ? "🔥 Skvělá práce!" : "💡 Nevadí propadněš:)"}</p>
+        `;
+    }
+}
+
+loadQuestion();
+
+// ---------------- SPINNER LOGIC ----------------
+const names=["Ládík","Milan","Karel H.","Karel K.","Sára","David Pf.","David Ph.","Matěj N","Matěj F","Markét","Sabina","Adél","Tobiáš","Petr W.","Petr K.","Sofie","Petr S.","Jakub P.","Jakub H.","Jidrřich","Vektor","Honza","Dan","Fanda","Učitel","Mýdlový Princ"];
+const wheelSvg=document.getElementById("wheel");
+const selectedNameDiv=document.getElementById("selectedName");
+const spinButton=document.getElementById("spinButton");
+const radius=200, center=200;
+const colors=["#e74c3c","#f39c12","#2ecc71","#3498db","#9b59b6","#1abc9c","#e67e22"];
+let rotation=0;
+
+// Draw the wheel
+function drawWheel(){
+    const total=names.length;
+    wheelSvg.innerHTML="";
+    for(let i=0;i<total;i++){
+        const startAngle=(i/total)*2*Math.PI;
+        const endAngle=((i+1)/total)*2*Math.PI;
+        const x1=center+radius*Math.cos(startAngle);
+        const y1=center+radius*Math.sin(startAngle);
+        const x2=center+radius*Math.cos(endAngle);
+        const y2=center+radius*Math.sin(endAngle);
+        const path=`M${center},${center} L${x1},${y1} A${radius},${radius} 0 0,1 ${x2},${y2} Z`;
+        const slice=document.createElementNS("http://www.w3.org/2000/svg","path");
+        slice.setAttribute("d",path);
+        slice.setAttribute("fill",colors[i%colors.length]);
+        wheelSvg.appendChild(slice);
+
+        const text=document.createElementNS("http://www.w3.org/2000/svg","text");
+        const angle=(startAngle+endAngle)/2;
+        const tx=center+Math.cos(angle)*(radius*0.6);
+        const ty=center+Math.sin(angle)*(radius*0.6);
+        text.setAttribute("x", tx);
+        text.setAttribute("y", ty);
+        text.setAttribute("fill","white");
+        text.setAttribute("font-size","12");
+        text.setAttribute("text-anchor","middle");
+        text.setAttribute("alignment-baseline","middle");
+        text.setAttribute("transform",`rotate(${angle*180/Math.PI},${tx},${ty})`);
+        text.textContent=names[i];
+        wheelSvg.appendChild(text);
+    }
+}
+
+// Spin the wheel
+function spinWheel(){
+    spinButton.disabled=true;
+    const total = names.length;
+    const randomDeg = Math.floor(Math.random()*360) + 1080; // 3+ spins
+    rotation += randomDeg;
+    wheelSvg.style.transition = "transform 4s cubic-bezier(0.33,1,0.68,1)";
+    wheelSvg.style.transform = `rotate(${rotation}deg)`;
+
+    setTimeout(()=>{
+        spinButton.disabled = false;
+        const segmentAngle = 360 / total;
+        const normalizedRotation = rotation % 360;
+        // Correct calculation for top pointer (top = 90°)
+        let index = Math.floor((360 - normalizedRotation + 90) / segmentAngle) % total;
+        selectedNameDiv.innerHTML = `🎉 Výherce: ${names[index]} 🎉`;
+    }, 4000);
+}
+
+drawWheel();
+spinButton.addEventListener("click",spinWheel);
+</script>
+
+</body>
+</html>
