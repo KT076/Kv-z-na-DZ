@@ -37,6 +37,22 @@ body {
     box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
+#homeBtn {
+    margin-bottom: 15px;
+    padding: 8px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f1c40f;
+    color: black;
+}
+
+#homeBtn:hover {
+    background: #ffd84d;
+}
+
+
 #question { font-size: 22px; margin-bottom: 15px; }
 img { max-width: 100%; height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
 .answers button {
@@ -97,6 +113,7 @@ img { max-width: 100%; height: 400px; object-fit: cover; border-radius: 10px; ma
 <div class="container">
     <!-- Quiz -->
     <div class="quiz-box">
+        <button id="homeBtn" onclick="goHome()">🏠 Home</button>
         <h1>Dopravní Zeměpis - USA</h1>
         <div id="question"></div>
         <img id="image" src="" alt="">
@@ -117,6 +134,11 @@ img { max-width: 100%; height: 400px; object-fit: cover; border-radius: 10px; ma
 </div>
 
 <script>
+    // HOME
+function goHome() {
+    window.location.href = "home.html";
+
+}
 // ---------------- QUIZ LOGIC ----------------
 const quiz = [
         {
@@ -298,7 +320,8 @@ function nextQuestion() {
         document.querySelector(".quiz-box").innerHTML = `
             <h1>🎉 Dokončil jsi kvíz :)!</h1>
             <h2>Vaše skóre: ${score} / ${quiz.length}</h2>
-            <p>${score >= 15 ? "🔥 Skvělá práce!" : "💡 Nevadí propadněš:)"}</p>
+            <button onclick="goHome()" id="homeBtn">🏠 Home</button>
+            <p>${score >= 15? "🔥 Skvělá práce!" : "💡 Nevadí propadněš:)"}</p>
         `;
     }
 }
