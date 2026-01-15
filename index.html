@@ -318,7 +318,7 @@ function nextQuestion() {
         loadQuestion();
     } else {
         document.querySelector(".quiz-box").innerHTML = `
-            <h1>🎉 Dokončil jsi kvíz :)!</h1>
+            <h1>🎉 Dokončil jsi kvíz!</h1>
             <h2>Vaše skóre: ${score} / ${quiz.length}</h2>
             <button onclick="goHome()" id="homeBtn">🏠 Home</button>
             <p>${score >= 15? "🔥 Skvělá práce!" : "💡 Nevadí propadněš:)"}</p>
@@ -395,3 +395,4 @@ spinButton.addEventListener("click",spinWheel);
 
 </body>
 </html>
+
